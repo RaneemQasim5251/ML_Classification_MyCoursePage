@@ -392,3 +392,18 @@ body.dark-mode * {
     padding: 5px;
     background-color: white;
 }
+.container {
+    position: relative;
+}
+
+.colab-link {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #e0e0e0; /* Gray-white color */
+    text-decoration: none; /* Removes underline from link */
+}
+
+.colab-link:hover {
+    color: #ffffff; /* White color on hover for better visibility */
+}
