@@ -1,0 +1,394 @@
+.progress-circle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0e1c23;
+    font-size: 14px;
+}
+
+body.dark-mode .progress-circle {
+    color: #fff;
+}
+
+.modal {
+    display: block;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+header {
+    background-color: #2c3e50; /* خلفية داكنة لزيادة التباين */
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+    50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+    100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+}
+
+header p {
+    margin: 15px 0 0;
+    font-size: 20px;
+    font-weight: 400;
+    color: #ecf0f1; /* لون فاتح قليلاً للوصف */
+}
+
+/* إزالة الخط الأبيض تحت العنوان */
+header h1::after {
+    content: none;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+button#theme-toggle {
+    background: none;
+    border: 2px solid white;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+button#theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+main {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.content-box {
+    width: 70%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.content {
+    padding: 20px;
+}
+
+.progress-tracker {
+    width: 25%;
+    background-color: #f1f3f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.progress-tracker ul {
+    list-style: none;
+    padding: 0;
+}
+
+.progress-tracker li {
+    padding: 10px 0;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.progress-tracker li:hover {
+    color: #4a90e2;
+}
+
+.progress-tracker li.active {
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+#progress-bar {
+    margin-top: 20px;
+    width: 100%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#progress {
+    height: 100%;
+    background-color: #4a90e2;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+button.continue-btn,
+button.test-btn,
+button.finish-btn {
+    padding: 10px 20px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+button.continue-btn:hover,
+button.test-btn:hover,
+button.finish-btn:hover {
+    background-color: #357ABD;
+    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+}
+
+.brain-image {
+    border: 2px solid #4a90e2;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.brain-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.image-description {
+    color: #4a90e2;
+    font-weight: 500;
+}
+
+.modal-content {
+    background-color: #fff;
+    border: 1px solid #4a90e2;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+    color: #4a90e2;
+}
+
+.close:hover,
+.close:focus {
+    color: #357ABD;
+}
+
+/* Modern touch for headers */
+h1, h2, h3 {
+    color: #4a90e2;
+    text-shadow: 1px 1px 2px rgba(74, 144, 226, 0.1);
+}
+
+/* Subtle hover effect for clickable elements */
+input[type="radio"]:checked + .image-container {
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+}
+
+/* Smooth transition for all elements */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode header {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .content-box {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .progress-tracker {
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .progress-tracker li.active {
+    color: #bb86fc;
+}
+
+body.dark-mode #progress-bar {
+    background-color: #333;
+}
+
+body.dark-mode #progress {
+    background-color: #bb86fc;
+}
+
+body.dark-mode button.continue-btn,
+body.dark-mode button.test-btn,
+body.dark-mode button.finish-btn {
+    background-color: #bb86fc;
+    color: #121212;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode button.continue-btn:hover,
+body.dark-mode button.test-btn:hover,
+body.dark-mode button.finish-btn:hover {
+    background-color: #3700b3;
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
+}
+
+body.dark-mode .brain-image {
+    border: 2px solid #bb86fc;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+body.dark-mode .image-description {
+    color: #bb86fc;
+}
+
+body.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    border: 1px solid #bb86fc;
+}
+
+body.dark-mode .close {
+    color: #bb86fc;
+}
+
+body.dark-mode .close:hover,
+body.dark-mode .close:focus {
+    color: #3700b3;
+}
+
+/* Neon text effect for headers in dark mode */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3 {
+    color: #bb86fc;
+    text-shadow: 0 0 5px rgba(187, 134, 252, 0.5), 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+/* Glowing effect for active elements */
+body.dark-mode input[type="radio"]:checked + .image-container {
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.7);
+}
+
+/* Smooth transition for all elements */
+body.dark-mode * {
+    transition: all 0.3s ease;
+}
+
+/* تنسيق الصور في الأقسام */
+.mri-scans img, 
+.image-selection img {
+    width: 200px; /* عرض الصورة */
+    height: auto; /* ضبط الارتفاع تلقائيًا بناءً على العرض */
+    margin: 10px; /* إضافة مسافة حول الصورة */
+    border-radius: 10px; /* جعل الحواف دائرية */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* إضافة ظل خفيف حول الصورة */
+}
+
+/* جعل الصور بجانب بعضها بشكل متجاور */
+.mri-scans, 
+.image-selection {
+    display: flex; /* عرض الصور بجانب بعضها */
+    justify-content: space-around; /* توزيع المسافات بشكل متساوٍ */
+    align-items: center; /* ضبط المحاذاة العمودية */
+    flex-wrap: wrap; /* السماح بتعدد الأسطر إذا كانت الشاشة صغيرة */
+}
+
+/* تنسيق الشريط المتحرك لتغيير الصور */
+.mri-scans input[type="range"], 
+.image-selection input[type="range"] {
+    width: 100%; /* عرض الشريط بطول العنصر */
+    margin-top: 10px; /* مسافة صغيرة أعلى الشريط */
+}
+.data-cropping {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.image-preview, .before-after {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.before-after {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.brain-image-frame {
+    width: 200px;
+    height: auto;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #4a90e2;
+    padding: 5px;
+    background-color: white;
+}

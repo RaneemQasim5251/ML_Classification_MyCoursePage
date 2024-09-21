@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raneem AI Labs: Brain Tumor Classification</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- Adding Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="container">
+                <h1>Raneem AI Labs</h1>
+                <h1>تصنيف أورام الدماغ باستخدام الذكاء الاصطناعي</h1>
+                <button id="theme-toggle">تبديل المظهر</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="content-box">
+                <!-- Changing content based on currentStep -->
+                <div class="content" v-if="currentStep === 0" dir="rtl">
+                    <h2>تحديد المشكلة 🩺</h2>
+                    <p>تحديد أهداف المشروع وحدود المشكلة، مع التركيز على أهمية التمييز بين الأورام الحميدة والخبيثة باستخدام الشبكات العصبية التلافيفية.</p>
+                    <p>هدفنا الرئيسي هو تصنيف الأورام إلى فئات حميدة وخبيثة، وهذه العملية ضرورية للتخطيط المناسب للعلاج.</p>
+                    <ul>
+                        <li>المستخدمون المحتملون للنموذج: المتخصصون الطبيون، المستشفيات، المؤسسات البحثية، تطبيقات الطب عن بعد، المؤسسات التعليمية.</li>
+                    </ul>
+                    <p>بعد تحديد نطاق المشروع، ننتقل إلى جمع البيانات.</p>
+                    <button @click="changeStep(1)" class="continue-btn">إبدأ</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 1" dir="rtl">
+                    <h2>جمع البيانات 🖼️</h2>
+                    <p>في مرحلة جمع البيانات من مشروعنا، نركز على تجميع البيانات اللازمة لتدريب واختبار الشبكة العصبية التلافيفية (CNN) لتصنيف أورام الدماغ. تعتبر هذه المرحلة حاسمة لأن جودة وكمية البيانات تؤثر بشكل مباشر على أداء نموذجنا.</p>
+                    <ul>
+                        <li><strong>مصدر البيانات:</strong> سنستخدم مجموعة بيانات تتضمن صورًا لفحوصات الدماغ تظهر أورامًا حميدة وخبيثة.</li>
+                    </ul>
+                    <p>قم بتحميل مجموعة البيانات من هنا:</p>
+                    <p><a href="https://www.kaggle.com/datasets/navoneel/brain-mri-images-for-brain-tumor-detection" target="_blank">تحميل مجموعة بيانات أورام الدماغ</a></p>
+                    <button @click="changeStep(2)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 2" dir="rtl">
+                    <h2>أنواع البيانات 🔬</h2>
+                    <p>تتكون مجموعة البيانات من صور الرنين المغناطيسي (MRI) المصنفة إلى فئتين:</p>
+                    <ul>
+                        <li><strong>NO</strong> - يشير إلى عدم وجود ورم، ومشفّر كـ <strong>0</strong>.</li>
+                        <li><strong>YES</strong> - يشير إلى وجود ورم، ومشفّر كـ <strong>1</strong>.</li>
+                    </ul>
+                    
+                    <h3>أنواع الصور 🔎</h3>
+                    <p><strong>Malignant - صورة ورم خبيث</strong></p>
+                    <img src="images/Y245.jpg" alt="Malignant Image">
+                    <p><strong>Benign - صورة ورم حميد</strong></p>
+                    <img src="images/N2.JPG" alt="Benign Image">
+                    <p> </p>
+                    <button @click="changeStep(3)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 3" dir="rtl">
+                    <h2>📝 هل يمكنك تحديد ما إذا كانت الصورة التالية تُظهر ورمًا خبيثًا أو حميدًا؟</h2>
+                    <img src="images/N2.JPG" alt="Brain Tumor Image">
+                    <p>اختر التصنيف:</p>
+                    <ul>
+                        <li v-for="(option, index) in quizOptions" :key="index"
+                            @click="selectAnswer(index)"
+                            :style="{ backgroundColor: selectedAnswer === index ? '#4a90e2' : '', color: selectedAnswer === index ? '#fff' : '' }">
+                            {{ option }}
+                        </li>
+                    </ul>
+                    <button @click="submitAnswer" class="continue-btn">إرسال الإجابة</button>
+                    <p :style="{ color: feedbackColor }">{{ quizFeedback }}</p>
+                    <button @click="changeStep(4)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 4" dir="rtl">
+                    <h2>تصور البيانات 📊</h2>
+                    <h3>مقدمة في تصور البيانات</h3>
+                    <p>تصور البيانات هو أداة قوية في أي مشروع يركز على البيانات، خاصة في مجالات مثل التصوير الطبي. في هذه المرحلة، نهدف إلى تمثيل البيانات من مجموعة بيانات أورام الدماغ بصريًا لاكتساب رؤى وفهم أفضل للأنماط الموجودة فيها.</p>
+                    <h4>الغرض:</h4>
+                    <p>يساعد التصور في تحديد الاتجاهات، والنقاط الشاذة، وتوزيع البيانات. يجعل البيانات المعقدة أكثر سهولة في الوصول إليها وتفسيرها، مما يساعد في كل من تطوير وتقييم نموذجنا.</p>
+                    <h4>أنواع التصورات:</h4>
+                    <p>لمشروعنا، سنركز على نوعين رئيسيين من التصورات:</p>
+                    <ol>
+                        <li><strong>Count of Class in Each Set</strong> - سيظهر هذا توزيع الحالات (وجود ورم أو عدم وجود ورم) في مجموعة البيانات الخاصة بنا، مع تسليط الضوء على أي عدم توازن قد يؤثر على تدريب النموذج.</li>
+                        <li><strong>Interactive MRI Scan Viewer</strong> - ميزة تفاعلية تسمح للمستخدمين بتصفح أقسام مختلفة من فحص الرنين المغناطيسي (MRI).</li>
+                    </ol>
+                    <button @click="changeStep(5)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 5" dir="rtl">
+                    <h2>التصور 📶</h2>
+                    <p>في هذا القسم، نعرض بشكل مبدئي خمس صور من كل فئة: تلك التي تشير إلى وجود أورام ("YES") وتلك التي بدون ("NO"). يساعد هذا في تقديم عرض فوري ومقارن للفئتين الرئيسيتين في مجموعة بياناتنا.</p>
+
+                    <div class="image-selection">
+                        <h3>عرض الصور</h3>
+                        <label>
+                            <input type="radio" v-model="selectedCategory" value="malignant"> خبيث
+                        </label>
+                        <label>
+                            <input type="radio" v-model="selectedCategory" value="benign"> حميد
+                        </label>
+
+                        <h4>عدد الصور: {{ numImages }}</h4>
+                        <div>
+                            <input type="range" v-model="numImages" min="1" max="5">
+                        </div>
+
+                        <div v-if="selectedCategory">
+                            <img v-for="n in numImages" :src="getVisualizationImageSrc(selectedCategory, n)" :alt="selectedCategory + ' image ' + n" :key="n">
+                        </div>
+                    </div>
+                    
+
+                    <hr>
+
+                    <h3><strong>توزيع الفئات في كل مجموعة</strong></h3>
+                    <button @click="showHint">💡 (i) معلومة</button>
+                    
+                    <div v-if="hintVisible" class="modal">
+                        <div class="modal-content">
+                            <span class="close" @click="hideHint">&times;</span>
+                            <p>يوضح المخطط التوزيع الإجمالي للحالات، مع عرض التوازن بين الفئتين (نعم و لا). يعتبر فهم هذا التوزيع أمرًا مهمًا حيث يخبرنا عن تكوين مجموعة البيانات ويساعد في تحديد أي تحيزات محتملة يمكن أن تؤثر على تدريب النموذج وأدائه.</p>
+                        </div>
+                    </div>
+
+                    <p>مجموعة التدريب: تُستخدم لتدريب النموذج.</p>
+                    <p>مجموعة التحقق: تُستخدم لتحسين النموذج وتجنب التعميم الزائد أثناء التدريب.</p>
+                    <p>مجموعة الاختبار: تُستخدم لتقييم أداء النموذج المدرب على بيانات غير مرئية.</p>
+
+                    <div id="data-viz"></div>
+                    <button @click="changeStep(6)" class="continue-btn">استمر</button>
+                </div>
+                
+                <div class="content" v-if="currentStep === 6" dir="rtl">
+                    <h2>تحليل صور أورام الدماغ 🖥</h2>
+                    <p><strong>عارض تفاعلي لمسح الرنين المغناطيسي (MRI)</strong> استخدم الشريط السفلي للتنقل بين الأقسام المختلفة لمسح الرنين المغناطيسي. تتيح لك هذه الميزة التفاعلية استكشاف تنوع وتعقيد المسوحات في مجموعة البيانات الخاصة بنا.</p>
+
+                    <div class="mri-scans">
+                        <div class="scan">
+                            <img :src="getInteractiveImageSrc('malignant', currentIndex)" alt="Malignant MRI">
+                            <input type="range" v-model="currentIndex" min="1" max="22">
+                        </div>
+                        <div class="scan">
+                            <img :src="getInteractiveImageSrc('benign', currentIndex)" alt="Benign MRI">
+                            <input type="range" v-model="currentIndex" min="1" max="22">
+                        </div>
+                        <button @click="changeStep(7)" class="continue-btn">استمر</button>
+                    </div>
+                </div>
+                
+
+                <!-- Box for Data Cropping -->
+                <div class="content" v-if="currentStep === 7" dir="rtl">
+                    <h2>قص البيانات 📷</h2>
+                    <p>يساعد القص في الشبكات العصبية التلافيفية (CNN) على التركيز على الميزات ذات الصلة عن طريق إزالة المعلومات غير ذات الصلة وتوفير زوايا متنوعة، مما يعزز قدرة الشبكة على تعلم الأنماط المميزة بكفاءة من الصور المدخلة.</p>
+
+                    <h3>قص البيانات</h3>
+
+                    <div class="data-cropping">
+                        <div class="image-preview">
+                            <h4>عرض قص الدماغ</h4>
+                            <img :src="croppedImageSrc" alt="Cropped Brain Tumor" class="brain-image-frame">
+                        </div>
+                        
+                        <div class="before-after">
+                            <div>
+                                <h4>قبل القص</h4>
+                                <img :src="beforeImageSrc" alt="Before Brain Tumor" class="brain-image-frame">
+                            </div>
+                            <div>
+                                <h4>بعد القص</h4>
+                                <img :src="afterImageSrc" alt="After Brain Tumor" class="brain-image-frame">
+                            </div>
+                        </div>
+                        <button @click="changeStep(8)" class="continue-btn">استمر</button>
+                    </div>
+                </div>
+
+                <!-- Box for Data Normalization -->
+                <div class="content" v-if="currentStep === 8" dir="rtl">
+                    <h2>تطبيع البيانات 🗂️</h2>
+                    <p>تتكون الصور من بكسلات، ولكل بكسل قيمة تتراوح من 0 إلى 255 (للصور ذات التدرج الرمادي 8 بت) أو مجموعات من ثلاث قيم تتراوح من 0 إلى 255 لكل قناة (الأحمر، الأخضر، والأزرق) للصور الملونة. يتضمن التطبيع إعادة مقياس هذه القيم إلى نطاق بين 0 و 1.</p>
+
+                    <h3>قبل التطبيع:</h3>
+                    <img src="images/image.png" alt="قبل التطبيع" class="brain-image">
+
+                    <h3>بعد التطبيع:</h3>
+                    <img src="images/normalizedimage.png" alt="بعد التطبيع" class="brain-image">
+                    <br>
+                    <button @click="changeStep(9)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 9" dir="rtl">
+                    <h2>أسئلة عن ما سبق 😱</h2>
+                
+                    <!-- Question 1 -->
+                    <h3>في تصنيف أورام الدماغ، ماذا يعني "حميد"؟</h3>
+                    <ul>
+                        <li @click="submitQuizAnswer(1, 'A')" :style="{ color: selectedAnswer11 === 'A' ? feedbackColor11 : '' }">
+                            A. نوع من الأورام الخبيثة
+                        </li>
+                        <li @click="submitQuizAnswer(1, 'B')" :style="{ color: selectedAnswer11 === 'B' ? feedbackColor11: '' }">
+                            B. ورم غير سرطاني
+                        </li>
+                    </ul>
+                
+                    <!-- Question 2 -->
+                    <h3>أي تقنية تصور تُستخدم عادة لتجزئة أورام الدماغ؟</h3>
+                    <ul>
+                        <li @click="submitQuizAnswer(2, 'A')" :style="{ color: selectedAnswer2 === 'A' ? feedbackColor2 : '' }">
+                            A. الرسوم البيانية العمودية
+                        </li>
+                        <li @click="submitQuizAnswer(2, 'B')" :style="{ color: selectedAnswer2 === 'B' ? feedbackColor2 : '' }">
+                            B. صور الرنين المغناطيسي
+                        </li>
+                        <li @click="submitQuizAnswer(2, 'C')" :style="{ color: selectedAnswer2 === 'C' ? feedbackColor2 : '' }">
+                            C. مخططات الانتشار
+                        </li>
+                    </ul>
+                
+                    <!-- Question 3 -->
+                    <h3>لماذا يعتبر تقليم البيانات مهمًا في تحليل صور أورام الدماغ؟</h3>
+                    <ul>
+                        <li @click="submitQuizAnswer(3, 'A')" :style="{ color: selectedAnswer3 === 'A' ? feedbackColor3 : '' }">
+                            A. لتحسين دقة الصورة
+                        </li>
+                        <li @click="submitQuizAnswer(3, 'B')" :style="{ color: selectedAnswer3 === 'B' ? feedbackColor3 : '' }">
+                            B. للتركيز على الخصائص ذات الصلة وإزالة المعلومات غير الضرورية
+                        </li>
+                    </ul>
+                
+                    <!-- Question 4 -->
+                    <h3>ما الهدف من تطبيع البيانات في تحليل صور أورام الدماغ؟</h3>
+                    <ul>
+                        <li @click="submitQuizAnswer(4, 'A')" :style="{ color: selectedAnswer4 === 'A' ? feedbackColor4 : '' }">
+                            A. زيادة حدة الصورة
+                        </li>
+                        <li @click="submitQuizAnswer(4, 'B')" :style="{ color: selectedAnswer4 === 'B' ? feedbackColor4 : '' }">
+                            B. لتوحيد المقاييس بين نقاط البيانات المختلفة
+                        </li>
+                    </ul>
+
+                    <button @click="changeStep(10)" class="continue-btn">استمر</button>
+                </div>
+
+                <!-- CNN Introduction Box -->
+
+                <div class="content" v-if="currentStep === 10" dir="rtl">
+                    <h2>النمذجة: مقدمة في الشبكات العصبية التلافيفية (CNN) 🗒</h2>
+                    <p>
+                        في مرحلة النمذجة، سنستخدم شبكة عصبية تلافيفية (CNN) لتصنيف أورام الدماغ. هذه خطوة حاسمة حيث يتعلم الكمبيوتر التمييز بين الأورام الحميدة والخبيثة من خلال مسوحات الدماغ.
+                    </p>
+                    
+                    <h3>ما هي الشبكة العصبية التلافيفية (CNN)؟</h3>
+                    <p>
+                        الشبكة العصبية التلافيفية هي نوع من الذكاء الاصطناعي الذي يتفوق في معالجة وتحليل الصور. إنها فعالة بشكل خاص في المهام التي تتطلب التعرف على الأنماط والتفاصيل داخل الصور.
+                    </p>
+                    
+                    <h3>مكونات الشبكة العصبية التلافيفية (CNN):</h3>
+                    <ul>
+                        <li><strong>طبقات التلافيف:</strong> تقوم بمسح أجزاء صغيرة من الصورة لتحديد ميزات مثل الحواف والأشكال.</li>
+                        <li><strong>طبقات التجميع (Pooling):</strong> تقوم هذه الطبقات بتقليل حجم بيانات الصورة.</li>
+                        <li><strong>الطبقات المتصلة بالكامل:</strong> تستخدم جميع المعلومات لاتخاذ قرار حول الصورة.</li>
+                    </ul>
+                    
+                    <img src="images/AI Labs_AI Projects_BTImages_CNNImage.webp" alt="بعد التطبيع" class="brain-image">
+                    <button @click="changeStep(11)" class="continue-btn">استمر</button>
+                </div>
+
+                <!-- صندوق جديد: تدريب وضبط نموذج الـ CNN -->
+                <div class="content" v-if="currentStep === 11" dir="rtl">
+                    <h2>تدريب وضبط نموذج الـ CNN 🏋️‍♂️</h2>
+
+                    <!-- معدل التعلم -->
+                    <div>
+                        <label>معدل التعلم: {{ learningRate }}</label>
+                        <input type="range" min="0.0001" max="0.1" step="0.0001" v-model="learningRate">
+                    </div>
+
+                    <!-- عدد الـ Epochs -->
+                    <div>
+                        <label>Epoch: {{ epoch }}</label>
+                        <input type="range" min="2" max="30" step="1" v-model="epoch">
+                    </div>
+
+                    <!-- نسبة تقسيم التدريب/الاختبار -->
+                    <div>
+                        <label>نسبة التدريب/الاختبار: {{ testTrainRatio }}%</label>
+                        <input type="range" min="20" max="80" step="1" v-model="testTrainRatio">
+                    </div>
+
+                    <!-- توضيح حول CNN -->
+                    <p>
+                        <i class="info-icon">ℹ️</i>
+                        الشبكة العصبية التلافيفية (CNN) تُستخدم لتدريب النموذج.
+                    </p>
+
+                    <!-- زر تدريب النموذج -->
+                    <button @click="trainModel" class="train-btn">تدريب</button>
+
+                    <!-- حالة التدريب -->
+                    <div v-if="trainingComplete" class="status-box">
+                        <p class="success-msg">
+                            ✅ تم تدريب النموذج بنجاح! دقة التحقق: {{ validationAccuracy }}% دقة الاختبار: {{ testAccuracy }}%
+                        </p>
+
+                        <!-- زر معلومات مصفوفة الارتباك -->
+                        <button @click="showConfusionMatrixInfo = !showConfusionMatrixInfo" class="info-btn">مصفوفة الارتباك</button>
+
+                        <!-- شرح مصفوفة الارتباك -->
+                        <div v-if="showConfusionMatrixInfo" class="modal">
+                            <div class="modal-content">
+                                <span class="close" @click="showConfusionMatrixInfo = false">&times;</span>
+                                <p>
+                                    مصفوفة الارتباك هي تمثيل مرئي لأداء النموذج التصنيفي. 
+                                    توضح المصفوفة عدد التوقعات الصحيحة والخاطئة التي قام بها النموذج مقارنةً بالنتائج الفعلية.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مصفوفة الارتباك (تستخدم Plotly) -->
+                    <div id="confusion-matrix"></div>
+
+                    <!-- مخطط دقة النموذج (تستخدم Plotly) -->
+                    <div id="accuracy-plot"></div>
+                    <button @click="changeStep(12)" class="continue-btn">استمر</button>
+                </div>
+
+                <div class="content" v-if="currentStep === 12" dir="rtl">
+                    <h2>تقييم النموذج 📋</h2>
+                    <p>في مرحلة التقييم، نختبر نموذج CNN الخاص بنا من خلال السماح للمستخدمين باختيار صور فحص الدماغ والتنبؤ بما إذا كانت الأورام حميدة أم خبيثة. يوفر هذا النهج التفاعلي تجربة مباشرة وعملية لقدرات النموذج.</p>
+                
+                    <!-- Test Your CNN Model Section -->
+                    <h3>🧬 اختبار نموذج CNN الخاص بك 🧬</h3>
+                    <p>📌 <em>اختر صورة لاختبار نموذج CNN الخاص بك.</em></p>
+                
+                    <!-- Image Selection -->
+                    <div class="image-selection">
+                        <label v-for="(image, index) in brainTumorImages" :key="index" class="image-label">
+                            <input type="radio" v-model="selectedImage" :value="index">
+                            <div class="image-container">
+                                <img :src="image" alt="Brain Tumor Image" class="brain-image">
+                                <p class="image-description">
+                                    صورة ورم دماغ {{ index < malignantImages.length ? 'خبيث' : 'حميد' }}
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+                
+                    <!-- Test Your Model Button -->
+                    <button @click="testModel" class="test-btn">اختبار النموذج الخاص بك</button>
+                
+                    <!-- Feedback Message -->
+                    <p v-if="predictionMessage" :style="{ color: predictionColor }">{{ predictionMessage }}</p>
+                
+                    <!-- Click to Finish Button -->
+                    <button @click="showFinalMessage" class="finish-btn">اضغط للإنهاء</button>
+                
+                    <!-- Final Congratulations Message -->
+                    <div v-if="showFinalBox" class="modal">
+                        <div class="modal-content">
+                            <span class="close" @click="closeFinalMessage">&times;</span>
+                            <p>🎉 تهانينا! لقد أكملت مشروع تصنيف أورام الدماغ بنجاح! 🎉</p>
+                        </div>
+                    </div>
+                </div>
+                
+
+
+            </section>
+
+            <aside class="progress-tracker">
+                <ul>
+                    <li @click="changeStep(0)" :class="{active: currentStep === 0}">0. تحديد المشكلة 🩺</li>
+                    <li @click="changeStep(1)" :class="{active: currentStep === 1}">1. جمع البيانات 🖼️</li>
+                    <li @click="changeStep(2)" :class="{active: currentStep === 2}">2. أنواع البيانات 🔬</li>
+                    <li @click="changeStep(3)" :class="{active: currentStep === 3}">3. تنبؤ الإنسان 📝</li>
+                    <li @click="changeStep(4)" :class="{active: currentStep === 4}">4. تصور البيانات📊</li>
+                    <li @click="changeStep(5)" :class="{active: currentStep === 5}">5. التصور📶</li>
+                    <li @click="changeStep(6)" :class="{active: currentStep === 6}">6. تحليل صور أورام الدماغ 🖥</li>
+                    <li @click="changeStep(7)" :class="{active: currentStep === 7}">7. قص البيانات 📷</li>
+                    <li @click="changeStep(8)" :class="{active: currentStep === 8}">8. تطبيع البيانات 🗂️</li>
+                    <li @click="changeStep(9)" :class="{active: currentStep === 9}">9. أسئلة عن ما سبق 😱</li>
+                    <li @click="changeStep(10)" :class="{active: currentStep === 10}">10. النمذجة: مقدمة في الشبكات العصبية التلافيفية (CNN) 🗒</li>
+                    <li @click="changeStep(11)" :class="{active: currentStep === 11}">11. CNNتدريب وضبط نموذج الـ 🏋️‍♂️</li>
+                    <li @click="changeStep(12)" :class="{active: currentStep === 12}">12. تقييم النموذج 📋</li>
+                </ul>
+                <div id="progress-bar">
+                    <div id="progress" :style="{width: progressPercentage + '%'}"></div>
+                </div>
+                <div class="progress-circle" :style="progressCircleStyle">{{ Math.floor(progressPercentage) }}%</div>
+
+            </aside>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Raneem AI Labs</p>
+        </footer>
+    </div>
+</body>
+</html>
