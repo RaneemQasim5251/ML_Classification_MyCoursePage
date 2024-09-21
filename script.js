@@ -36,6 +36,8 @@ new Vue({
             'images/Y246.JPG',
             'images/Y245.JPG',
             'images/Y244.JPG',
+            'images/Y243.JPG',
+            'images/Y10.JPG'
         ],
         benignImages: [
             'images/no 5.jpeg',
